@@ -162,7 +162,7 @@ def scrape_perfumes():
             except Exception as e:
                 print(f"Ошибка при обработке продукта: {e}")
 
-if __name__ == '__main__':
-    init_db()
-    scrape_perfumes()
-    print("Скрапинг завершен и данные сохранены в базу данных.")
+#if __name__ == '__main__':
+    #init_db()
+    #scrape_perfumes()
+    #print("Скрапинг завершен и данные сохранены в базу данных.")

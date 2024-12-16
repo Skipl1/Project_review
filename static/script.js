@@ -8,6 +8,7 @@ let maxRating = 5;
 
 let filtersEnabled = false;
 let ratingFilterEnabled = false;
+let allProducts = [];
 
 function toggleFilters() {
     filtersEnabled = !filtersEnabled;
@@ -122,27 +123,25 @@ async function searchPerfumes() {
     const minRating = parseFloat(document.getElementById('ratingMin').value) || 2;
     const maxRating = parseFloat(document.getElementById('ratingMax').value) || 5;
 
-    const products = await fetchPerfumes(query, currentOffset, limit, minPrice, maxPrice, minRating, maxRating);
+    const products = await fetchPerfumes(query, currentOffset, 10000, minPrice, maxPrice, minRating, maxRating);
+
+    allProducts = products;
 
     if (document.getElementById('priceFilterCheckbox').checked) {
-        products.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+        allProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
     }
 
-    renderProducts(products, true);
-    currentOffset += products.length;
+    renderProducts(allProducts.slice(0, limit), true);
+    currentOffset = limit;
 }
 
 async function loadMorePerfumes() {
-    const products = await fetchPerfumes(lastQuery, currentOffset, limit, minPrice, maxPrice, minRating, maxRating);
+    const productsToLoad = allProducts.slice(currentOffset, currentOffset + limit);
 
-    if (document.getElementById('priceFilterCheckbox').checked) {
-        products.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
-    }
+    renderProducts(productsToLoad, false);
+    currentOffset += limit;
 
-    renderProducts(products, false);
-    currentOffset += products.length;
-
-    if (products.length < limit) {
+    if (currentOffset >= allProducts.length) {
         document.getElementById('loadMoreContainer').style.display = 'none';
     }
 }
@@ -190,8 +189,7 @@ function renderProducts(products, reset = false) {
 }
 
 window.onload = async () => {
-    const products = await fetchPerfumes('', currentOffset, limit, minPrice, maxPrice, minRating, maxRating);
-
-    renderProducts(products, true);
-    currentOffset += products.length;
+    await searchPerfumes();
 };
+
+

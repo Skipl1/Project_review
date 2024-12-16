@@ -94,7 +94,7 @@ def update_database():
 if __name__ == '__main__':
     init_db()
     scheduler = BackgroundScheduler()
-    scheduler.add_job(update_database, 'interval', minutes=10)
+    scheduler.add_job(update_database, 'interval', minutes=20)
     scheduler.start()
 
     try:
