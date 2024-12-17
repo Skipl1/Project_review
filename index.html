@@ -34,6 +34,27 @@
                 <input type="number" id="ratingMax" min="0" max="5" step="0.1" value="5" oninput="updateRatingFilterLabel()">
             </div>
         </div>
+        <div class="notes-filter">
+            <label for="notesFilterCheckbox">
+                <input type="checkbox" id="notesFilterCheckbox" onchange="toggleNotesFilter()" checked> Фильтр по нотам
+            </label>
+            <div id="notesTable">
+                <div class="notes-scroll-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Нота</th>
+                                <th>Выбрать</th>
+                            </tr>
+                        </thead>
+                        <tbody id="notesTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+
     </div>
 
     <div class="search-container">

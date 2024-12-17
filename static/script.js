@@ -9,6 +9,7 @@ let maxRating = 5;
 let filtersEnabled = false;
 let ratingFilterEnabled = false;
 let allProducts = [];
+let selectedNotes = [];
 
 function toggleFilters() {
     filtersEnabled = !filtersEnabled;
@@ -18,13 +19,23 @@ function toggleFilters() {
     if (filtersEnabled) {
         filterOptions.style.display = 'block';
         toggleButton.textContent = 'Скрыть фильтры';
+
+        const notesFilterCheckbox = document.getElementById('notesFilterCheckbox');
+        notesFilterCheckbox.checked = false;
+
+        const notesTable = document.getElementById('notesTable');
+        notesTable.style.display = 'none';
+
+        selectedNotes = [];
     } else {
         filterOptions.style.display = 'none';
         toggleButton.textContent = 'Показать фильтры';
-    }
 
-    resetFilters();
+        resetFilters();
+    }
 }
+
+
 
 function togglePriceFilter() {
     const priceInputs = document.getElementById('priceInputs');
@@ -90,6 +101,7 @@ function resetFilters() {
     priceFilterCheckbox.checked = false;
 
     togglePriceFilter();
+
     const minInput = document.getElementById('priceMin');
     const maxInput = document.getElementById('priceMax');
     minInput.value = 0;
@@ -107,32 +119,92 @@ function resetFilters() {
     const ratingInputs = document.getElementById('ratingInputs');
     ratingInputs.style.display = 'none';
 
+    const notesFilterCheckbox = document.getElementById('notesFilterCheckbox');
+    notesFilterCheckbox.checked = false;
+    const notesTable = document.getElementById('notesTable');
+    notesTable.style.display = 'none';
+
+    selectedNotes = [];
+
+    const noteCheckboxes = document.querySelectorAll('#notesTableBody input[type="checkbox"]');
+    noteCheckboxes.forEach(checkbox => checkbox.checked = false);
+
     searchPerfumes();
 }
 
-async function fetchPerfumes(query, offset, limit, minPrice, maxPrice, minRating, maxRating) {
-    const response = await fetch(`/api/search?query=${query}&offset=${offset}&limit=${limit}&minPrice=${minPrice}&maxPrice=${maxPrice}&minRating=${minRating}&maxRating=${maxRating}`);
+
+async function fetchPerfumes(query, offset, limit, minPrice, maxPrice, minRating, maxRating, selectedNotes) {
+    const response = await fetch(`/api/search?query=${query}&offset=${offset}&limit=${limit}&minPrice=${minPrice}&maxPrice=${maxPrice}&minRating=${minRating}&maxRating=${maxRating}&notes=${JSON.stringify(selectedNotes)}`);
     return response.json();
 }
 
+
 async function searchPerfumes() {
-    const query = document.getElementById('searchInput').value;
+    const query = document.getElementById('searchInput').value.trim();
     lastQuery = query;
     currentOffset = 0;
 
     const minRating = parseFloat(document.getElementById('ratingMin').value) || 2;
     const maxRating = parseFloat(document.getElementById('ratingMax').value) || 5;
 
-    const products = await fetchPerfumes(query, currentOffset, 10000, minPrice, maxPrice, minRating, maxRating);
+    const notesFilterEnabled = document.getElementById('notesFilterCheckbox').checked;
+    const activeNotes = notesFilterEnabled ? selectedNotes : [];
 
-    allProducts = products;
+    try {
+        const response = await fetch(
+            `/api/search?query=${encodeURIComponent(query)}&offset=0&limit=10000&minPrice=${minPrice}&maxPrice=${maxPrice}&minRating=${minRating}&maxRating=${maxRating}&notes[]=${activeNotes.map(encodeURIComponent).join('&notes[]=')}`
+        );
 
-    if (document.getElementById('priceFilterCheckbox').checked) {
-        allProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+        if (!response.ok) {
+            throw new Error(`Ошибка сервера: ${response.status}`);
+        }
+
+        const products = await response.json();
+
+        allProducts = products;
+
+        if (document.getElementById('priceFilterCheckbox').checked) {
+            allProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+        }
+
+        renderProducts(allProducts.slice(0, limit), true);
+        currentOffset = limit;
+
+        if (allProducts.length <= limit) {
+            document.getElementById('loadMoreContainer').style.display = 'none';
+        } else {
+            document.getElementById('loadMoreContainer').style.display = 'block';
+        }
+    } catch (error) {
+        console.error("Ошибка поиска:", error);
+        const resultsContainer = document.getElementById('resultsContainer');
+        resultsContainer.innerHTML = '<p>Произошла ошибка при поиске. Попробуйте позже.</p>';
+        document.getElementById('loadMoreContainer').style.display = 'none';
     }
+}
 
-    renderProducts(allProducts.slice(0, limit), true);
-    currentOffset = limit;
+
+
+
+
+
+
+function renderProducts(products, reset = false) {
+    const container = document.getElementById('resultsContainer');
+    if (reset) container.innerHTML = '';
+
+    products.forEach(product => {
+        const div = document.createElement('div');
+        div.className = 'product';
+        div.innerHTML = `
+            <h3>${product.title}</h3>
+            <p>Цена: ${product.price}</p>
+            <p>Рейтинг: ${product.rating}</p>
+            <p>Ноты: ${product.notes}</p>
+            <img src="${product.image_url}" alt="${product.title}" style="width: 100px;">
+        `;
+        container.appendChild(div);
+    });
 }
 
 async function loadMorePerfumes() {
@@ -188,8 +260,68 @@ function renderProducts(products, reset = false) {
     document.getElementById('loadMoreContainer').style.display = products.length < limit && !reset ? 'none' : 'block';
 }
 
-window.onload = async () => {
-    await searchPerfumes();
-};
+function toggleNotesFilter() {
+    const notesTable = document.getElementById('notesTable');
+    const checkbox = document.getElementById('notesFilterCheckbox');
+
+    if (checkbox.checked) {
+        notesTable.style.display = 'block';
+        loadNotes();
+    } else {
+        notesTable.style.display = 'none';
+        selectedNotes = [];
+    }
+    searchPerfumes();
+}
+
+async function loadNotes() {
+    try {
+        const response = await fetch('/api/get_notes');
+        const notes = await response.json();
+
+        const notesTableBody = document.getElementById('notesTableBody');
+        notesTableBody.innerHTML = '';
+
+        const filteredNotes = notes.filter(note => note.trim() !== "");
+
+        filteredNotes.forEach(note => {
+            const row = document.createElement('tr');
+
+            row.innerHTML = `
+                <td>${note}</td>
+                <td>
+                    <input type="checkbox" value="${note}" onchange="toggleNoteSelection(event)">
+                </td>
+            `;
+
+            notesTableBody.appendChild(row);
+        });
+    } catch (error) {
+        console.error("Ошибка при загрузке нот:", error);
+    }
+}
 
 
+
+function toggleNoteSelection(event) {
+    const note = event.target.value;
+
+    if (event.target.checked) {
+        if (!selectedNotes.includes(note)) {
+            selectedNotes.push(note);
+        }
+    } else {
+        selectedNotes = selectedNotes.filter(n => n !== note);
+    }
+
+    console.log("Выбранные ноты:", selectedNotes);
+
+    searchPerfumes();
+}
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadNotes();
+    searchPerfumes();
+});

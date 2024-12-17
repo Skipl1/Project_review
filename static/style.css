@@ -320,3 +320,214 @@ header {
     background: #fff;
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
 }
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+    padding-top: 60px;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#notesTable {
+    margin-top: 1rem;
+    width: 100%;
+    display: block;
+    text-align: center;
+}
+
+#notesTable table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+#notesTable th, #notesTable td {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+#notesTable th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+#notesFilterCheckbox {
+    margin-right: 10px;
+}
+
+.notes-filter {
+    margin-bottom: 1rem;
+}
+
+.notes-filter label {
+    display: flex;
+    align-items: center;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+#notesTable {
+    display: none;
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#notesTable table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#notesTable th, #notesTable td {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+#notesTable th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+    text-align: left;
+}
+
+#notesTable td {
+    text-align: center;
+}
+
+#notesTable input[type="checkbox"] {
+    margin: 0;
+    transform: scale(1.2);
+    cursor: pointer;
+}
+.notes-scroll-container {
+    max-height: 400px;
+    overflow-y: auto;
+    position: relative;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    padding-right: 10px;
+}
+
+.notes-scroll-container::-webkit-scrollbar {
+    width: 0;
+}
+.notes-scroll-container {
+    scroll-behavior: smooth;
+}
+.notes-scroll-container th, .notes-scroll-container td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.notes-scroll-body table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.notes-scroll-container th {
+    background-color: #f4f4f4;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+.notes-scroll-body {
+    display: block;
+    max-height: 150px;
+    overflow-y: auto;
+    margin-right: -10px;
+    padding-right: 10px;
+}
+
+.notes-scroll-body td {
+    width: 50%;
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.notes-scroll-body input[type="checkbox"] {
+    margin: 0;
+    transform: scale(1.2);
+    cursor: pointer;
+}
+
+.notes-scroll-body td:first-child {
+    width: 50%;
+}
+
+.notes-scroll-body td:last-child {
+    width: 20%;
+}
+
+.notes-scroll-body button {
+    width: 100%;
+    padding: 8px 0;
+    border: none;
+    background-color: #333;
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    font-size: 1rem;
+    transition: background-color 0.3s, transform 0.2s ease;
+}
+
+.notes-scroll-body button:hover {
+    background-color: #555;
+    transform: scale(1.05);
+}
+
+.notes-scroll-body button:active {
+    background-color: #222;
+    transform: scale(0.95);
+}
+
+#notesTable th, #notesTable td {
+    padding: 16px 12px;
+    font-size: 1.1rem;
+    line-height: 1.5;
+}
+
+#notesTable th {
+    width: 70%;
+}
+
+#notesTable td:last-child {
+    width: 30%;
+}
