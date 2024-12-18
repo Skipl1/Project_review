@@ -124,10 +124,10 @@ def update_database():
 if __name__ == '__main__':
     init_db()
     scheduler = BackgroundScheduler()
-    scheduler.add_job(update_database, 'interval', minutes=20)
+    scheduler.add_job(update_database, 'interval', minutes=30)
     scheduler.start()
 
     try:
-        app.run(debug=True)
+        app.run(host='0.0.0.0', port=5000, debug=True)
     except (KeyboardInterrupt, SystemExit):
         scheduler.shutdown()

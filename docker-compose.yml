@@ -1,0 +1,15 @@
+version: "3.8"
+services:
+  app:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+    environment:
+      FLASK_ENV: development
+  db:
+    image: busybox
+    volumes:
+      - ./products.db:/app/products.db
+    command: tail -f /dev/null
