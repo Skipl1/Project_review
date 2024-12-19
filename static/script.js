@@ -35,8 +35,6 @@ function toggleFilters() {
     }
 }
 
-
-
 function togglePriceFilter() {
     const priceInputs = document.getElementById('priceInputs');
     const priceFilterCheckbox = document.getElementById('priceFilterCheckbox');
@@ -134,7 +132,7 @@ function resetFilters() {
 
 
 async function fetchPerfumes(query, offset, limit, minPrice, maxPrice, minRating, maxRating, selectedNotes) {
-    const response = await fetch(`/api/search?query=${query}&offset=${offset}&limit=${limit}&minPrice=${minPrice}&maxPrice=${maxPrice}&minRating=${minRating}&maxRating=${maxRating}&notes=${JSON.stringify(selectedNotes)}`);
+    const response = await fetch(`/api/search?query=${query}&offset=${offset}&limit=${limit}&minPrice=${minPrice}&maxPrice=${maxPrice}&minRating=${minRating}&maxRating=${maxRating}&notes[]=${JSON.stringify(selectedNotes)}`);
     return response.json();
 }
 
@@ -184,29 +182,6 @@ async function searchPerfumes() {
 }
 
 
-
-
-
-
-
-function renderProducts(products, reset = false) {
-    const container = document.getElementById('resultsContainer');
-    if (reset) container.innerHTML = '';
-
-    products.forEach(product => {
-        const div = document.createElement('div');
-        div.className = 'product';
-        div.innerHTML = `
-            <h3>${product.title}</h3>
-            <p>Цена: ${product.price}</p>
-            <p>Рейтинг: ${product.rating}</p>
-            <p>Ноты: ${product.notes}</p>
-            <img src="${product.image_url}" alt="${product.title}" style="width: 100px;">
-        `;
-        container.appendChild(div);
-    });
-}
-
 async function loadMorePerfumes() {
     const productsToLoad = allProducts.slice(currentOffset, currentOffset + limit);
 
@@ -217,6 +192,7 @@ async function loadMorePerfumes() {
         document.getElementById('loadMoreContainer').style.display = 'none';
     }
 }
+
 
 function renderProducts(products, reset = false) {
     const resultsContainer = document.getElementById('resultsContainer');
@@ -301,8 +277,6 @@ async function loadNotes() {
     }
 }
 
-
-
 function toggleNoteSelection(event) {
     const note = event.target.value;
 
@@ -318,8 +292,6 @@ function toggleNoteSelection(event) {
 
     searchPerfumes();
 }
-
-
 
 document.addEventListener('DOMContentLoaded', () => {
     loadNotes();

@@ -1,0 +1,15 @@
+//если хотите посмотреть базу данных,то вот данные чтобы это сделать.
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "Data base",
+            "database": "products_db",
+            "username": "root",
+            "password": "root_password"
+        }
+    ]
+}
