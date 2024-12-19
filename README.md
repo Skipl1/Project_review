@@ -10,6 +10,9 @@
 
 Идеально подходит для тех, кто ищет идеальный аромат для себя или в подарок!
 
+## Картинка с дизайном сайта
+![image](https://github.com/user-attachments/assets/f84dbbf5-ab78-49f6-bcbc-428011f98ae9)
+
 ## Установка
 - git clone https://github.com/Skipl1/Project_review.git
 - ./build.sh
