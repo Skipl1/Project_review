@@ -2,17 +2,33 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4;
+    background-image: url('https://wallpapers.com/images/hd/lilac-background-o45yu28g5rk3mi77.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     color: #333;
 }
 
 header {
-    background-color: #333;
-    color: #fff;
-    padding: 1rem;
+    background-color: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(15px);
+    color: #333;
+    padding: 2rem 0;
     text-align: center;
-    font-size: 1.5rem;
+    font-size: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
+
+header h1 {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #8A2BE2;
+    text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3);
+    margin: 0;
+    padding: 0;
+}
+
+
 
 .search-container {
     margin: 2rem auto;
@@ -531,3 +547,43 @@ header {
 #notesTable td:last-child {
     width: 30%;
 }
+
+html {
+    scroll-behavior: smooth;
+}
+
+.notes-scroll-container {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px 0;
+    background-color: #f9f9f9;
+}
+
+#toggleFiltersButton,
+#loadMoreButton,
+.product-info a,
+.notes-scroll-body button {
+    background-color: #8A2BE2;
+    color: #FFF;
+    border: none;
+    transition: background-color 0.3s, transform 0.2s ease;
+}
+
+#toggleFiltersButton:hover,
+#loadMoreButton:hover,
+.product-info a:hover,
+.notes-scroll-body button:hover {
+    background-color: #9370DB;
+    transform: scale(1.05);
+}
+
+#toggleFiltersButton:active,
+#loadMoreButton:active,
+.product-info a:active,
+.notes-scroll-body button:active {
+    background-color: #7A378B;
+    transform: scale(0.95);
+}
+
