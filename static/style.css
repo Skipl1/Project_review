@@ -125,26 +125,29 @@ header h1 {
 .results {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
-    padding: 2rem;
+    gap: 20px;
+    padding: 20px;
+    justify-content: center;
 }
 
 .product-card {
     background-color: #fff;
     border: 1px solid #ddd;
-    border-radius: 8px;
+    border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
-    padding: 1rem;
-    transition: box-shadow 0.3s ease;
+    padding: 20px;
     max-width: 320px;
-    margin: 0 auto;
+    margin: 15px auto;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     overflow: hidden;
 }
 
 .product-card:hover {
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    transform: scale(1.02);
 }
 
 .product-info {
@@ -156,10 +159,32 @@ header h1 {
 }
 
 .product-info h3 {
-    font-size: 1rem;
-    margin: 0;
+    font-size: 1.2rem;
     font-weight: bold;
     color: #333;
+    margin-bottom: 10px;
+}
+
+.product-info .price {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #e74c3c;
+    margin-bottom: 10px;
+}
+
+.product-info .notes {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 15px;
+    text-align: left;
+    line-height: 1.5;
+}
+
+.product-info .volume,
+.product-info .brand {
+    font-size: 0.9rem;
+    color: #777;
+    margin-bottom: 10px;
 }
 
 .product-info p {
@@ -169,31 +194,37 @@ header h1 {
 }
 
 .product-info a {
-    margin-top: 1rem;
-    padding: 0.5rem 1rem;
-    background-color: #333;
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #8A2BE2;
     color: #fff;
     text-decoration: none;
-    border-radius: 4px;
-    text-align: center;
+    border-radius: 5px;
     font-size: 0.9rem;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .product-info a:hover {
-    background-color: #555;
+    background-color: #9370DB;
+    transform: scale(1.05);
+}
+
+.product-info a:active {
+    background-color: #7A378B;
+    transform: scale(0.95);
 }
 
 .product-image {
-    flex-shrink: 0;
-    width: 100%;
     display: flex;
     justify-content: center;
+    align-items: center;
+    margin-bottom: 15px;
 }
 
 .product-image img {
     max-width: 100%;
     height: auto;
-    border-radius: 4px;
+    border-radius: 8px;
 }
 
 .load-more-container {
@@ -372,13 +403,6 @@ header h1 {
     cursor: pointer;
 }
 
-#notesTable {
-    margin-top: 1rem;
-    width: 100%;
-    display: block;
-    text-align: center;
-}
-
 #notesTable table {
     width: 100%;
     border-collapse: collapse;
@@ -386,8 +410,10 @@ header h1 {
 }
 
 #notesTable th, #notesTable td {
-    padding: 10px;
+    padding: 8px;
+    margin: 0;
     border: 1px solid #ddd;
+    text-align: center;
 }
 
 #notesTable th {
@@ -412,23 +438,15 @@ header h1 {
 }
 
 #notesTable {
-    display: none;
-    margin-top: 10px;
-    padding: 10px;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 0;
+    padding: 0;
+    border-collapse: collapse;
+    width: 100%;
 }
 
 #notesTable table {
     width: 100%;
     border-collapse: collapse;
-}
-
-#notesTable th, #notesTable td {
-    padding: 10px;
-    border: 1px solid #ddd;
 }
 
 #notesTable th {
@@ -446,23 +464,9 @@ header h1 {
     transform: scale(1.2);
     cursor: pointer;
 }
-.notes-scroll-container {
-    max-height: 400px;
-    overflow-y: auto;
-    position: relative;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-    padding-right: 10px;
-}
 
 .notes-scroll-container::-webkit-scrollbar {
     width: 0;
-}
-.notes-scroll-container {
-    scroll-behavior: smooth;
 }
 .notes-scroll-container th, .notes-scroll-container td {
     padding: 10px;
@@ -534,12 +538,6 @@ header h1 {
     transform: scale(0.95);
 }
 
-#notesTable th, #notesTable td {
-    padding: 16px 12px;
-    font-size: 1.1rem;
-    line-height: 1.5;
-}
-
 #notesTable th {
     width: 70%;
 }
@@ -553,13 +551,15 @@ html {
 }
 
 .notes-scroll-container {
+    margin: 0;
+    padding: 0;
     max-height: 300px;
     overflow-y: auto;
     border: 1px solid #ccc;
-    padding: 10px;
-    margin: 10px 0;
     background-color: #f9f9f9;
 }
+
+
 
 #toggleFiltersButton,
 #loadMoreButton,
@@ -585,5 +585,108 @@ html {
 .notes-scroll-body button:active {
     background-color: #7A378B;
     transform: scale(0.95);
+}
+
+#compareContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: flex-start;
+    align-items: stretch;
+}
+
+#clearCompareButton {
+    background-color: #8A2BE2;
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    margin: 15px 0;
+    border-radius: 50px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, transform 0.3s ease, box-shadow 0.3s;
+}
+
+#clearCompareButton:hover {
+    background-color: #9370DB;
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+#compareWrapper {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+#compareButton {
+    background-color: #8A2BE2;
+    color: #FFF;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, transform 0.2s ease;
+}
+
+#clearCompareButton:active {
+    background-color: #7A378B;
+    transform: scale(0.95);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+#compareButton:hover {
+    background-color: #9370DB;
+    transform: scale(1.05);
+}
+
+#compareButton:active {
+    background-color: #7A378B;
+    transform: scale(0.95);
+}
+
+#compareButton .button-text {
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+#compareButton .compare-icon {
+    font-size: 20px;
+    color: #FFF;
+}
+
+a {
+    text-decoration: none;
+  }
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.back-to-search-button {
+    display: inline-block;
+    padding: 10px 30px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #6a1b9a;
+    text-decoration: none;
+    border-radius: 50px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s;
+}
+
+.back-to-search-button:hover {
+    background-color: #8e24aa;
 }
 

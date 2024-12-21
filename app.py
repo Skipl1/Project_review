@@ -144,6 +144,51 @@ def update_database():
     scrape_perfumes()
     print("База данных обновлена.")
 
+@app.route('/compare')
+def compare():
+    return render_template('compare.html')
+
+@app.route('/api/compare', methods=['GET'])
+def compare_products():
+    ids = request.args.get('ids', '').strip()
+
+    if not ids:
+        return jsonify([])
+
+    try:
+        product_ids = [int(id) for id in ids.split(',') if id.isdigit()]
+    except ValueError:
+        return jsonify([])
+
+    if not product_ids:
+        return jsonify([])
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        query = 'SELECT * FROM products WHERE id = ANY(%s)'
+        cursor.execute(query, (product_ids,))
+        rows = cursor.fetchall()
+    finally:
+        cursor.close()
+        conn.close()
+
+    return jsonify([
+        {
+            "id": row[0],
+            "title": row[1],
+            "price": row[2],
+            "link": row[3],
+            "rating": row[4],
+            "notes": row[5],
+            "volume": row[6],
+            "brand": row[7],
+            "image_url": row[8],
+        }
+        for row in rows
+    ])
+
 if __name__ == '__main__':
     init_db()
     scheduler = BackgroundScheduler()

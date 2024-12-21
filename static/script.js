@@ -10,6 +10,8 @@ let filtersEnabled = false;
 let ratingFilterEnabled = false;
 let allProducts = [];
 let selectedNotes = [];
+let comparedProducts = [];
+let lastComparedProducts = [];
 
 function toggleFilters() {
     filtersEnabled = !filtersEnabled;
@@ -85,6 +87,11 @@ function updateRatingFilterLabel() {
     const minInput = document.getElementById('ratingMin');
     const maxInput = document.getElementById('ratingMax');
 
+    if (!minInput || !maxInput) {
+        console.error('Элементы для рейтинга не найдены');
+        return;
+    }
+
     const min = parseFloat(minInput.value) || 2;
     const max = parseFloat(maxInput.value) || 5;
 
@@ -93,6 +100,7 @@ function updateRatingFilterLabel() {
 
     searchPerfumes();
 }
+
 
 function resetFilters() {
     const priceFilterCheckbox = document.getElementById('priceFilterCheckbox');
@@ -138,7 +146,14 @@ async function fetchPerfumes(query, offset, limit, minPrice, maxPrice, minRating
 
 
 async function searchPerfumes() {
-    const query = document.getElementById('searchInput').value.trim();
+    const searchInput = document.getElementById('searchInput');
+
+    if (!searchInput) {
+        console.error("Элемент с id='searchInput' не найден");
+        return;
+    }
+
+    const query = searchInput.value.trim();
     lastQuery = query;
     currentOffset = 0;
 
@@ -181,6 +196,19 @@ async function searchPerfumes() {
     }
 }
 
+function toggleNotesFilter() {
+    const notesTable = document.getElementById('notesTable');
+    const checkbox = document.getElementById('notesFilterCheckbox');
+
+    if (checkbox.checked) {
+        notesTable.style.display = 'block';
+        loadNotes();
+    } else {
+        notesTable.style.display = 'none';
+        selectedNotes = [];
+    }
+    searchPerfumes();
+}
 
 async function loadMorePerfumes() {
     const productsToLoad = allProducts.slice(currentOffset, currentOffset + limit);
@@ -221,9 +249,17 @@ function renderProducts(products, reset = false) {
                 <p><strong>Цена:</strong> ${formattedPrice}</p>
                 <p><strong>Рейтинг:</strong> ${product.rating}</p>
                 <p><strong>Ноты:</strong> ${product.notes}</p>
-                <p><strong>Объем:</strong> ${product.volume}</p>
+                <p><strong>Объем:</strong> ${product.volume} мл.</p>
                 <p><strong>Бренд:</strong> ${product.brand}</p>
                 <a href="${product.link}" target="_blank">Перейти к товару</a>
+
+                <!-- Галочка для добавления в сравнение -->
+                <label class="compare-checkbox">
+                    <input type="checkbox" class="compare-input" 
+                        onchange="toggleCompareCheckbox(this, ${product.id})"
+                        ${comparedProducts.includes(product.id) ? 'checked' : ''}>
+                    <span class="checkmark"></span> Добавить в сравнение
+                </label>
             </div>
             <div class="product-image">
                 <img src="${imageUrl}" alt="${product.title}" />
@@ -236,19 +272,6 @@ function renderProducts(products, reset = false) {
     document.getElementById('loadMoreContainer').style.display = products.length < limit && !reset ? 'none' : 'block';
 }
 
-function toggleNotesFilter() {
-    const notesTable = document.getElementById('notesTable');
-    const checkbox = document.getElementById('notesFilterCheckbox');
-
-    if (checkbox.checked) {
-        notesTable.style.display = 'block';
-        loadNotes();
-    } else {
-        notesTable.style.display = 'none';
-        selectedNotes = [];
-    }
-    searchPerfumes();
-}
 
 async function loadNotes() {
     try {
@@ -277,6 +300,50 @@ async function loadNotes() {
     }
 }
 
+function toggleCompareCheckbox(checkbox, productId) {
+    if (checkbox.checked) {
+        if (!comparedProducts.includes(productId)) {
+            comparedProducts.push(productId);
+        }
+        if (!lastComparedProducts.includes(productId)) {
+            lastComparedProducts.push(productId);
+        }
+    } else {
+        comparedProducts = comparedProducts.filter(id => id !== productId);
+    }
+    saveComparedProducts();
+    updateCompareLink();
+}
+
+function updateCompareLink() {
+    const compareLink = document.getElementById('compareLink');
+    const allComparedIds = Array.from(new Set([...lastComparedProducts, ...comparedProducts]));
+    compareLink.href = `/compare?id=${allComparedIds.join(',')}`;
+    compareLink.style.display = allComparedIds.length > 0 ? 'inline-block' : 'none';
+}
+
+function saveComparedProducts() {
+    localStorage.setItem('comparedProducts', JSON.stringify(comparedProducts));
+    localStorage.setItem('lastComparedProducts', JSON.stringify(lastComparedProducts));
+}
+
+function loadComparedProducts() {
+    const savedComparedProducts = localStorage.getItem('comparedProducts');
+    const savedLastComparedProducts = localStorage.getItem('lastComparedProducts');
+
+    if (savedComparedProducts) {
+        comparedProducts = JSON.parse(savedComparedProducts);
+    }
+    if (savedLastComparedProducts) {
+        lastComparedProducts = JSON.parse(savedLastComparedProducts);
+    }
+    updateCompareLink();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadComparedProducts();
+});
+
 function toggleNoteSelection(event) {
     const note = event.target.value;
 
@@ -293,7 +360,109 @@ function toggleNoteSelection(event) {
     searchPerfumes();
 }
 
+function addToCompare(productId) {
+    if (comparedProducts.indexOf(productId) === -1) {
+        comparedProducts.push(productId);
+        alert(`Товар с ID ${productId} добавлен в сравнение.`);
+    } else {
+        alert(`Товар с ID ${productId} уже добавлен.`);
+    }
+    console.log("comparedProducts:", comparedProducts);
+
+    const compareLink = document.getElementById('compareLink');
+    compareLink.href = `/compare?id=${comparedProducts.join(',')}`;
+    compareLink.style.display = comparedProducts.length > 0 ? 'inline-block' : 'none';
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadComparedProducts();
+    const compareLink = document.getElementById('compareLink');
+    compareLink.style.display = comparedProducts.length > 0 ? 'inline-block' : 'none';
+});
+
+document.addEventListener('DOMContentLoaded', loadComparePage);
+
+async function loadComparePage() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const ids = urlParams.get('id');
+    
+    if (ids) {
+        try {
+            const response = await fetch(`/api/compare?ids=${ids}`);
+            
+            if (!response.ok) {
+                throw new Error(`Ошибка сервера: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (data.length > 0) {
+                const container = document.getElementById('compareContainer');
+                container.innerHTML = data.map(product => {
+                    const imageUrl = product.image_url || '/static/images/default-image.jpg';
+                    const formattedPrice = `${product.price} руб.`;
+
+                    return `
+                        <div class="product-card">
+                            <div class="product-info">
+                                <h3>${product.title}</h3>
+                                <p><strong>Цена:</strong> ${formattedPrice}</p>
+                                <p><strong>Рейтинг:</strong> ${product.rating}</p>
+                                <p><strong>Ноты:</strong> ${product.notes}</p>
+                                <p><strong>Объем:</strong> ${product.volume} мл.</p>
+                                <p><strong>Бренд:</strong> ${product.brand}</p>
+                                <a href="${product.link}" target="_blank">Перейти к товару</a>
+                            </div>
+                            <div class="product-image">
+                                <img src="${imageUrl}" alt="${product.title}" />
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                alert("Продукты не найдены!");
+            }
+        } catch (error) {
+            console.error("Ошибка при загрузке данных:", error);
+            alert("Произошла ошибка при получении данных.");
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const clearCompareButton = document.getElementById('clearCompareButton');
+    
+    if (clearCompareButton) {
+        clearCompareButton.addEventListener('click', clearCompareList);
+    }
+});
+
+function clearCompareList() {
+    comparedProducts = [];
+    lastComparedProducts = [];
+    localStorage.setItem('comparedProducts', JSON.stringify(comparedProducts));
+    localStorage.setItem('lastComparedProducts', JSON.stringify(lastComparedProducts));
+    const compareCheckboxes = document.querySelectorAll('.compare-input');
+    compareCheckboxes.forEach(checkbox => {
+        checkbox.checked = false;
+    });
+    const compareContainer = document.getElementById('compareContainer');
+    if (compareContainer) {
+        compareContainer.innerHTML = '';
+    }
+    const compareLink = document.getElementById('compareLink');
+    if (compareLink) {
+        compareLink.style.display = 'none';
+    }
+    console.log('Сравнение очищено');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-    loadNotes();
-    searchPerfumes();
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        loadNotes();
+        searchPerfumes();
+    } else {
+        console.warn("Элемент с id='searchInput' отсутствует в DOM. Проверьте HTML.");
+    }
 });
