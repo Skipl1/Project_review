@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сравнение парфюмов</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Сравнение парфюмов</h1>
+        <div class="button-container">
+            <a href="/" class="back-to-search-button" onclick="handleBackToSearch(event)">Назад к поиску</a>
+        </div>
+    </header>
+
+    <div id="compareWrapper">
+        <button id="clearCompareButton">Очистить сравнение</button>
+    </div>
+
+    <div class="compare-container" id="compareContainer">
+        {% for product in products %}
+        <div class="product-card">
+            <div class="product-info">
+                <h3>{{ product.title }}</h3>
+                <p><strong>Цена:</strong> {{ product.price }} руб.</p>
+                <p><strong>Рейтинг:</strong> {{ product.rating }}</p>
+                <p><strong>Ноты:</strong> {{ product.notes }}</p>
+                <p><strong>Объем:</strong> {{ product.volume }} мл</p>
+                <p><strong>Бренд:</strong> {{ product.brand }}</p>
+                <a href="{{ product.link }}" target="_blank">Перейти к товару</a>
+            </div>
+            <div class="product-image">
+                <img src="{{ product.image_url }}" alt="{{ product.title }}">
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
